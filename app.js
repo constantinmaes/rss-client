@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const axios = require('axios');
+const xml2js = require('xml2js');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -26,17 +27,22 @@ app.use('/users', usersRouter);
 // RSS function
 app.get('/rss', async (req, res) => {
     try {
-        const url = req.query.url;
+        const url = req.query.url; // localhost:3000/rss?url=https://www.reddit.com/.rss
         if (!url) {
-            res.status(400).send('No URL provided');
+            return res.status(400).send('No URL provided');
         }
         console.log('IN RSS ROUTE');
         const { data } = await axios.get(url);
-        console.log(data)
+        // const axiosResponse = await axios.get(url);
+        // const data = axiosResponse.data;
+        // console.log(data); // data contient le XML brut
+        const obj = await xml2js.parseStringPromise(data);
+        // console.log(require('util').inspect(obj, { depth: null }));
+        const news = obj.rss.channel[0].item;
+        return res.json(news);
     } catch (err) {
         console.error('Something happened', err);
     }
-    
 });
 
 // catch 404 and forward to error handler
