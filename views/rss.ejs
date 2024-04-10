@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RSS</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>RSS Feed: <%= title %></h1>
+    <% news.forEach(function(item) { %>
+      <h2><a href="<%= item.link %>"><%= item.title %></a></h2>
+      <p><%= item.description %></p>
+      <p><%= item.pubDate %></p>
+    <% }); %>
+  </body>
+</html>
