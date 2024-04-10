@@ -5,6 +5,24 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const axios = require('axios');
 const xml2js = require('xml2js');
+const sqlite3 = require('sqlite3').verbose();
+const openDb = require('sqlite').open;
+let myDatabase;
+
+openDb({
+    filename: './rss.sqlite',
+    driver: sqlite3.Database,
+})
+    .then((db) => {
+        myDatabase = db;
+        console.log('Database opened');
+        myDatabase.run(
+            'CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, link TEXT, description TEXT, pubDate TEXT)'
+        );
+    })
+    .catch((err) => {
+        console.error(err);
+    });
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -38,8 +56,10 @@ app.get('/rss', async (req, res) => {
         // console.log(data); // data contient le XML brut
         const obj = await xml2js.parseStringPromise(data);
         // console.log(require('util').inspect(obj, { depth: null }));
+        const title = obj.rss.channel[0].title[0];
         const news = obj.rss.channel[0].item;
-        return res.json(news);
+        //return res.json(news);
+        res.render('rss', { news, title });
     } catch (err) {
         console.error('Something happened', err);
     }
