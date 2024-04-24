@@ -9,6 +9,25 @@ const sqlite3 = require('sqlite3').verbose();
 const openDb = require('sqlite').open;
 let myDatabase;
 
+const cron = require('node-cron');
+
+cron.schedule('* * * * *', () => {
+    console.log('Scheduled job');
+    // Tableau de liens RSS
+    const links = ['...'];
+    links.forEach(async (url) => {
+        try {
+            const { data } = await axios.get(url);
+            const obj = await xml2js.parseStringPromise(data);
+            const title = obj.rss.channel[0].title[0];
+            const news = obj.rss.channel[0].item;
+            // Sauvegarder les news dans la base de données
+        } catch (err) {
+            console.error('Something happened', err);
+        }
+    });
+});
+
 openDb({
     filename: './rss.sqlite',
     driver: sqlite3.Database,
@@ -66,19 +85,19 @@ app.get('/rss', async (req, res) => {
 });
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use(function (req, res, next) {
+    next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;
