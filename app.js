@@ -89,6 +89,19 @@ app.get('/rss', async (req, res) => {
     }
 });
 
+// List feeds
+app.get('/feeds', async (req, res) => {
+    try {
+        const feeds = await myDatabase.all('SELECT * FROM feeds');
+        res.render('feeds', { feeds });
+    } catch (err) {
+        console.error('Error getting feeds', err);
+    }
+});
+
+// List items from a feed
+app.get('/feeds/:id', async (req, res) => {});
+
 // Add feed
 app.get('/add-feed', (req, res) => {
     res.render('add-feed');

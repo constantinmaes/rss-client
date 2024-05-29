@@ -1,0 +1,21 @@
+<table>
+    <tr>
+        <th>Feed</th>
+        <th>URL</th>
+        <th>Actions</th>
+    </tr>
+    <% feeds.forEach(function(feed) { %>
+    <tr>
+        <td><%= feed.name %></td>
+        <td><%= feed.url %></td>
+        <td>
+            <a href="/feeds/<%= feed.id %>">View</a>
+        </td>
+    </tr>
+    <% }); %>
+    <tr>
+        <td colspan="3">
+            <a href="/add-feed">Add new feed</a>
+        </td>
+    </tr>
+</table>
