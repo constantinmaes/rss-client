@@ -100,7 +100,33 @@ app.get('/feeds', async (req, res) => {
 });
 
 // List items from a feed
-app.get('/feeds/:id', async (req, res) => {});
+app.get('/feeds/:id', async (req, res) => {
+    try {
+        const itemsPerPage = 20;
+        const page = +req.query.page || 1;
+        const offset = (page - 1) * itemsPerPage;
+        const feedId = +req.params.id;
+
+        // Compute number of pages
+        const count = await myDatabase.all(
+            'SELECT COUNT(*) AS count FROM items WHERE feedId = ?',
+            feedId
+        );
+        const total = count[0].count;
+
+        const numberOfPages = Math.ceil(total / itemsPerPage);
+
+        const items = await myDatabase.all(
+            'SELECT * FROM items WHERE feedId = ? ORDER BY pubDate DESC LIMIT ? OFFSET ?',
+            feedId,
+            itemsPerPage,
+            offset
+        );
+        res.render('feed-items', { items, numberOfPages, page, total });
+    } catch (e) {
+        console.error(e);
+    }
+});
 
 // Add feed
 app.get('/add-feed', (req, res) => {

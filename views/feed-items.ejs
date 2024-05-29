@@ -1,0 +1,30 @@
+<%- include('header') -%>
+<div>Total <%= total %></div>
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Published</th>
+        <th>Actions</th>
+    </tr>
+    <% items.forEach(function(item) { %>
+    <tr>
+        <td><%= item.title %></td>
+        <td><%= item.pubDate %></td>
+        <td>
+            <a href="<%= item.link %>">View</a>
+        </td>
+    </tr>
+    <% }); %>
+    <tr>
+        <td colspan="3">
+            <% for (let i=1; i<= numberOfPages; i++) {%>
+            <a
+                <% if (page === i) { %> class="current-page" <% } %>
+                href="?page=<%= i%>"
+                ><%= i %></a
+            >
+            <% } %>
+        </td>
+    </tr>
+</table>
+<%- include('footer') -%>
